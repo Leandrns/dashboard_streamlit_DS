@@ -5,6 +5,8 @@ st.set_page_config(
     layout="wide"
 )
 
+st.sidebar.markdown("Desenvolvido por Leandro Souza")
+
 st.title("📌 Dashboard de Análise de CSAT")
 st.write("""
 Bem-vindo ao dashboard! 🚀  
