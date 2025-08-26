@@ -8,7 +8,7 @@ import streamlit as st
 # --- CAMINHOS DIRETOS PARA OS ARQUIVOS ---
 # Coloque sua foto e CV em uma pasta chamada 'assets' no mesmo nível do seu script
 resume_file = "assets/CURRICULO.pdf"
-profile_pic = "assets/profile-pic.png"
+profile_pic = "assets/foto_perfil.jpeg"
 
 
 # --- DADOS GERAIS ---
@@ -18,7 +18,7 @@ Estagiário de QA, estudante de Engenharia de Software, com sonho de me tornar D
 """
 EMAIL = "leandro2005souza@gmail.com"
 SOCIAL_MEDIA = {
-    "LinkedIn": "https://linkedin.com/in/",
+    "LinkedIn": "https://linkedin.com/in/leandro-souza-326722181",
     "GitHub": "https://github.com/Leandrns",
 }
 
@@ -63,13 +63,13 @@ with col2:
     
     # --- Seção de Skills ---
     st.write("---")
-    st.subheader("Hard Skills")
+    st.subheader("Skills")
     st.write("""
-    - 👩‍💻 **Linguagens:** Python, SQL, JavaScript, HTML/CSS
-    - 📊 **Data Science & Vis:** Pandas, NumPy, Scikit-Learn, Plotly, Matplotlib
-    - 🌐 **Front-End & Frameworks:** Streamlit, React, Node.js
-    - 🗄️ **Bancos de Dados:** MySQL, PostgreSQL, MongoDB
-    - ☁️ **Cloud & Ferramentas:** Git, Docker, AWS (S3, EC2)
+    - 👩‍💻 **Linguagens:** Python, SQL, JavaScript, HTML/CSS, Java, C++
+    - 📊 **Data Science:** Pandas, NumPy, Scipy, Plotly, Matplotlib
+    - 🌐 **Front-End & Frameworks:** Streamlit, React, Sass, Node.js, Vite
+    - 🗄️ **Bancos de Dados:** MySQL, PostgreSQL, Oracle
+    - 🔨 **Ferramentas:** Git, Docker, Figma, Postman
     """)
 
     # --- Seção de Experiências ---
@@ -77,11 +77,10 @@ with col2:
     st.subheader("Experiências Profissionais")
 
     # --- Experiência 1 ---
-    with st.expander("🏢 Desenvolvedor de Dados | Empresa X (2022 - Presente)"):
+    with st.expander("🏢 Estágio em Qualidade (QA) | NeoAssist (2025 - Presente)"):
         st.write("""
-        - ► Desenvolvi e mantive pipelines de dados para processamento de grandes volumes de informação.
-        - ► Criei dashboards interativos em Streamlit e Power BI para monitoramento de KPIs de negócio.
-        - ► Apliquei modelos de machine learning para previsão de vendas, resultando em um aumento de 15% na precisão.
+        - ► Elaboração de testes de Bots e Centrais de Atendimento.
+        - ► Participação em reuniões e rituais de SCRUM.
         """)
     
     # --- Seção de Formação Acadêmica ---
@@ -89,10 +88,17 @@ with col2:
     st.subheader("Formação Acadêmica")
 
     # --- Formação 1 ---
-    with st.expander("🎓 Bacharelado em Ciência da Computação | Universidade Z (2018 - 2022)"):
+    with st.expander("🎓 Ensino Médio Técnico em Mecatrônica | ETEC Presidente Vargas (2021 - 2023)"):
         st.write("""
-        - ► TCC sobre a aplicação de algoritmos de processamento de linguagem natural para análise de sentimentos.
-        - ► Participação em projetos de pesquisa na área de inteligência artificial.
+        - ► TCC sobre uso da robótica em terapia assistiva para crianças com paralisia cerebral.
+        - ► Participação em projetos de programação, mecânica e eletrônica.
+        """)
+        
+    # --- Formação 2 ---
+    with st.expander("🎓 Bacharelado em Engenharia de Software | FIAP (2024 - 2027)"):
+        st.write("""
+        - ► Desenvolvimento de projetos de Front-End, Back-End, Análise de Dados, Inteligência Artificial e outros.
+        - ► Participação em Iniciação Científica sobre aplicação de Realidadde Aumentada para autoajuda.
         """)
 
     # --- Seção de Projetos ---
