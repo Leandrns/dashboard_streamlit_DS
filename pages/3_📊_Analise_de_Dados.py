@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+from scipy import stats
 
 # Configuração da página para usar o layout 'wide'
 st.set_page_config(
@@ -130,9 +131,9 @@ elif subpagina == "Entendendo o Dataset":
     st.dataframe(df_tipos_de_dados, use_container_width=True)
 
 
-# ---------------------------
-# Subpágina 3: Dashboard Exploratória
-# ---------------------------
+# ----------------------------
+# Subpágina 3: Análise Exploratória
+# ----------------------------
 elif subpagina == "Análise Exploratória":
     st.header("Dashboard de Análise Exploratória do CSAT")
 
@@ -358,4 +359,103 @@ elif subpagina == "Análise Exploratória":
         fig_city.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig_city, use_container_width=True)
         st.write("Este gráfico ajuda a identificar se há regiões geográficas específicas onde a satisfação do cliente é notavelmente maior ou menor.")
+
+# ----------------------------
+# Subpágina 4: Análise Inferencial
+# ----------------------------
+elif subpagina == "Análise Inferencial":
+        st.header("🔬 Análise Inferencial (Testes Estatísticos)")
+        st.info("Esta seção usa testes estatísticos para validar as observações da análise exploratória.")
+
+        analysis_option = st.sidebar.radio(
+            "Selecione o Teste Estatístico",
+            ["Intervalos de Confiança por Categoria", "Teste de Hipótese: CSAT por Turno", "Teste de Associação: Experiência vs. Nota Máxima"]
+        )
+
+        # --- Teste 1: Intervalos de Confiança ---
+        if analysis_option == "Intervalos de Confiança por Categoria":
+            st.subheader("Intervalos de Confiança (95%) para a Média de CSAT por Categoria")
+            st.write("""
+            O intervalo de confiança nos dá uma faixa de valores onde podemos ter 95% de certeza que a **média real** de satisfação da população se encontra. 
+            Se os intervalos de duas categorias **não se sobrepõem**, é uma forte evidência de que a diferença entre elas é estatisticamente significativa.
+            """)
+
+            results = []
+            for category in df['category'].unique():
+                data = df[df['category'] == category]['csat_score']
+                if len(data) > 1:
+                    mean = data.mean()
+                    # Calcula o intervalo de confiança para a média
+                    ci = stats.t.interval(0.95, len(data)-1, loc=mean, scale=stats.sem(data))
+                    results.append({'Categoria': category, 'Média': mean, 'IC Inferior': ci[0], 'IC Superior': ci[1]})
+            
+            df_ci = pd.DataFrame(results)
+            
+            # Gráfico com barras de erro
+            fig = px.bar(
+                df_ci,
+                x='Categoria',
+                y='Média',
+                error_y=df_ci['IC Superior'] - df_ci['Média'],
+                error_y_minus=df_ci['Média'] - df_ci['IC Inferior'],
+                title='Média de CSAT com Intervalo de Confiança de 95%',
+                labels={'Média': 'Média de CSAT', 'Categoria': 'Categoria de Atendimento'}
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            st.dataframe(df_ci)
+
+        # --- Teste 2: Kruskal-Wallis ---
+        elif analysis_option == "Teste de Hipótese: CSAT por Turno":
+            st.subheader("Teste Kruskal-Wallis: Diferença de CSAT entre Turnos")
+            st.write("""
+            Este teste verifica se existe uma diferença estatisticamente significativa nas notas de CSAT entre os diferentes turnos de atendimento. 
+            Está sendo usado o teste de Kruskal-Wallis porque o CSAT é uma variável ordinal.
+            """)
+            
+            st.markdown("**Hipótese Nula (H₀):** A distribuição de notas de CSAT é a mesma em todos os turnos.")
+            st.markdown("**Hipótese Alternativa (H₁):** Pelo menos um turno tem uma distribuição de notas de CSAT diferente dos outros.")
+
+            shifts = df['agent_shift'].unique()
+            samples = [df[df['agent_shift'] == shift]['csat_score'] for shift in shifts]
+            
+            # Realiza o teste
+            stat, p_value = stats.kruskal(*samples)
+
+            st.metric(label="Valor-p (p-value) do teste", value=f"{p_value:.4f}")
+
+            if p_value < 0.05:
+                st.success("Conclusão: Rejeitamos a Hipótese Nula. O p-valor é menor que 0.05, indicando que existe uma diferença estatisticamente significativa na satisfação do cliente entre os turnos.")
+            else:
+                st.warning("Conclusão: Falhamos em Rejeitar a Hipótese Nula. O p-valor é maior que 0.05, indicando que não encontramos uma diferença estatisticamente significativa na satisfação do cliente entre os turnos.")
+
+        # --- Teste 3: Qui-Quadrado ---
+        elif analysis_option == "Teste de Associação: Experiência vs. Nota Máxima":
+            st.subheader("Teste Qui-Quadrado: Associação entre Experiência do Agente e Nota Máxima (CSAT 5)")
+            st.write("""
+            Este teste verifica se existe uma associação (dependência) entre o tempo de experiência de um agente e a probabilidade de ele receber uma nota 5.
+            """)
+            
+            st.markdown("**Hipótese Nula (H₀):** Não há associação entre o tempo de experiência do agente e o recebimento de uma nota 5.")
+            st.markdown("**Hipótese Alternativa (H₁):** Existe uma associação entre as duas variáveis.")
+
+            # Prepara os dados
+            df_chi = df.copy()
+            df_chi['nota_maxima'] = np.where(df_chi['csat_score'] == 5, 'Sim', 'Não')
+            
+            # Cria a tabela de contingência
+            contingency_table = pd.crosstab(df_chi['tenure_bucket'], df_chi['nota_maxima'])
+            
+            st.write("Tabela de Contingência (Observado):")
+            st.dataframe(contingency_table)
+
+            # Realiza o teste
+            chi2, p_value, _, _ = stats.chi2_contingency(contingency_table)
+
+            st.metric(label="Valor-p (p-value) do teste", value=f"{p_value:.4f}")
+
+            if p_value < 0.05:
+                st.success("Conclusão: Rejeitamos a Hipótese Nula. O valor-p é menor que 0.05, indicando que existe uma associação estatisticamente significativa entre a experiência do agente e a chance de receber uma nota máxima.")
+            else:
+                st.warning("Conclusão: Falhamos em Rejeitar a Hipótese Nula. O valor-p é maior que 0.05, indicando que não encontramos uma associação estatisticamente significativa entre as variáveis.")
+
 
