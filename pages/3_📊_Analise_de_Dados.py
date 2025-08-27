@@ -10,6 +10,8 @@ st.set_page_config(
     layout="wide"
 )
 
+st.sidebar.markdown("<p style='text-align: center; font-size: 12px'>Desenvolvido por <strong>Leandro Souza<strong></p>", unsafe_allow_html=True)
+
 # --- FUNÇÃO DE PRÉ-PROCESSAMENTO ---
 # Usamos @st.cache_data para que o Streamlit execute esta função apenas uma vez
 @st.cache_data
@@ -35,20 +37,20 @@ def load_and_preprocess_data(file_path):
     return df
 
 # Carrega os dados usando a função de cache
-df = load_and_preprocess_data("Customer_support_data.csv")
+df = load_and_preprocess_data("./assets/Customer_support_data.csv")
 
 # --- BARRA LATERAL (SIDEBAR) ---
 st.sidebar.header("Navegação")
 subpagina = st.sidebar.selectbox(
     "Selecione uma seção",
-    ["Contextualização e Objetivo", "Entendendo o Dataset", "Análise Exploratória"]
+    ["Contextualização e Objetivo", "Entendendo o Dataset", "Análise Exploratória", "Análise Inferencial"]
 )
 
 # ---------------------------
 # Subpágina 1: Contextualização
 # ---------------------------
 if subpagina == "Contextualização e Objetivo":
-    st.header("📌 Contextualização e Objetivo")
+    st.header("🎯 Contextualização e Objetivo")
     st.write("""
     O objetivo desta análise é entender os fatores que impactam a satisfação do cliente (**CSAT Score**), 
     uma métrica crucial para o sucesso de qualquer negócio de e-commerce. 
@@ -65,6 +67,13 @@ if subpagina == "Contextualização e Objetivo":
     - **Satisfação por Cidade:** De quais cidades vêm os maiores e menores indíces de satisfação?
     Este dashboard interativo permite explorar visualmente os dados para extrair insights valiosos e direcionar melhorias no processo de atendimento ao cliente.
     """)
+
+    st.subheader("Perguntas da Análise Inferencial (Validação Estatística)")
+    st.markdown("""
+        * **Significância por Categoria:** A diferença de satisfação entre as categorias é **estatisticamente significativa** ou pode ser fruto do acaso?
+        * **Significância por Turno:** A performance observada entre os diferentes turnos é **realmente diferente** em termos estatísticos?
+        * **Associação entre Experiência e Excelência:** Existe uma **associação estatisticamente comprovada** entre o tempo de experiência de um agente e sua capacidade de alcançar a nota máxima de satisfação (CSAT 5)?
+        """)
 
 # ---------------------------
 # Subpágina 2: Entendendo o Dataset
@@ -135,7 +144,7 @@ elif subpagina == "Entendendo o Dataset":
 # Subpágina 3: Análise Exploratória
 # ----------------------------
 elif subpagina == "Análise Exploratória":
-    st.header("Dashboard de Análise Exploratória do CSAT")
+    st.header("📈 Dashboard de Análise Exploratória do CSAT")
 
     # --- Menu de Análises na Sidebar ---
     analysis_option = st.sidebar.radio(
@@ -174,7 +183,7 @@ elif subpagina == "Análise Exploratória":
                 label="Total de Respostas",
                 value=f"{len(df):,}"
             )
-            st.write("A alta concentração de notas 5 indica uma tendência geral de satisfação, mas a presença de notas 1 e 2 não pode ser ignorada.")
+            st.write("A alta concentração de notas 5 indica uma tendência geral de satisfação, mas a boa presença de notas 1 não pode ser ignorada.")
 
 
     # --- Análise 2: Categoria ---
@@ -191,7 +200,9 @@ elif subpagina == "Análise Exploratória":
         )
         st.plotly_chart(fig_box_cat, use_container_width=True)
         st.write("O boxplot revela a dispersão das notas. Categorias com caixas mais longas e 'bigodes' extensos têm maior variabilidade nas avaliações.")
-        
+        st.write("Nesse caso, é possível observar que a categoria 'Outros' apresenta uma alta variabilidade de CSAT. Isso pode se dar, por exemplo, por ser uma categoria que não possui um assunto bem definido, dificultando o trabalho dos atendentes.")
+        st.write("Abaixo, temos também um gráfico e um resumo estatístico para entender melhor o comportamento da CSAT por categoria:")
+
         col1, col2 = st.columns(2)
 
         with col1:
@@ -223,6 +234,7 @@ elif subpagina == "Análise Exploratória":
         )
         st.plotly_chart(fig_box_channel, use_container_width=True)
         st.write("Comparar os canais ajuda a entender se a plataforma de comunicação impacta a experiência do cliente.")
+        st.write("Nesse contexto, os canais são separados em Email, Inbound (quando o cliente inicia o contato) e Outcall (quando a empresa inicia o contato).")
         st.dataframe(df.groupby('channel_name')['csat_score'].describe(), use_container_width=True)
 
     # --- Análise 4: Tempo de Resposta ---
@@ -282,6 +294,7 @@ elif subpagina == "Análise Exploratória":
             O gráfico de dispersão visualiza essa relação. Note que a maioria dos pontos se concentra em tempos de resposta baixos.
             *(O gráfico usa uma amostra de 3000 pontos para melhor performance visual.)*
             """)
+
     # --- Análise 5: Turno ---
     elif analysis_option == "Análise por Turno":
         st.subheader("Análise de CSAT por Turno do Agente")
@@ -303,7 +316,7 @@ elif subpagina == "Análise Exploratória":
         st.subheader("Análise de CSAT por Tempo de Experiência do Agente")
 
         # Definir a ordem correta para a variável ordinal
-        tenure_order = ['On Job Training', '0-30', '>90']
+        tenure_order = ['On Job Training', '0-30', '31-60', '61-90','>90']
         df['tenure_bucket'] = pd.Categorical(df['tenure_bucket'], categories=tenure_order, ordered=True)
 
         fig_bar_tenure = px.bar(
@@ -315,7 +328,7 @@ elif subpagina == "Análise Exploratória":
             labels={'tenure_bucket': 'Tempo de Experiência (dias)', 'csat_score': 'Média de CSAT'},
             text_auto='.2f'
         )
-        st.plotly_chart(fig_bar_tenure, use_container_width=True)
+        st.plotly_chart(fig_bar_tenure, use_container_width=True, observed=True)
         st.write("Observa-se uma tendência de que agentes com mais tempo de casa ('Tenure') tendem a receber notas de satisfação mais altas, o que destaca a importância da retenção e do desenvolvimento de talentos.")
         st.dataframe(df.groupby('tenure_bucket')['csat_score'].describe(), use_container_width=True)
 

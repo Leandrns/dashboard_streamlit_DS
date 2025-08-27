@@ -5,7 +5,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.sidebar.markdown("Desenvolvido por Leandro Souza")
+st.sidebar.markdown("<p style='text-align: center; font-size: 12px'>Desenvolvido por <strong>Leandro Souza<strong></p>", unsafe_allow_html=True)
 
 st.title("📌 Dashboard de Análise de CSAT")
 st.write("""

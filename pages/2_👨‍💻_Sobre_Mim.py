@@ -2,8 +2,9 @@ import streamlit as st
 
 # --- Configuração da Página ---
 # Use st.set_page_config() no início do seu script principal (app.py)
-# st.set_page_config(page_title="Seu Nome | Portfólio", page_icon="👨‍💻", layout="wide")
+st.set_page_config(page_title="Leandro Souza | Sobre Mim", layout="wide")
 
+st.sidebar.markdown("<p style='text-align: center; font-size: 12px'>Desenvolvido por <strong>Leandro Souza<strong></p>", unsafe_allow_html=True)
 
 # --- CAMINHOS DIRETOS PARA OS ARQUIVOS ---
 # Coloque sua foto e CV em uma pasta chamada 'assets' no mesmo nível do seu script
@@ -17,11 +18,6 @@ DESCRIPTION = """
 Estagiário de QA, estudante de Engenharia de Software, com sonho de me tornar Desenvolvedor Full-Stack.
 """
 EMAIL = "leandro2005souza@gmail.com"
-SOCIAL_MEDIA = {
-    "LinkedIn": "https://linkedin.com/in/leandro-souza-326722181",
-    "GitHub": "https://github.com/Leandrns",
-}
-
 
 # --- TÍTULO E CABEÇALHO ---
 st.title("👨‍💻 Sobre Mim")
@@ -39,9 +35,16 @@ with col1:
 
     # --- Links Sociais e Contato ---
     st.write(f"📧 {EMAIL}")
+
+    coluna1, coluna2 = st.columns([1, 8], gap="small")
     
     # Adiciona links
-    st.write(" ".join([f"[{platform}]({link})" for platform, link in SOCIAL_MEDIA.items()]))
+    with coluna1:
+        st.image("./assets/github-brands-solid-full.svg", width=36)
+        st.image("./assets/linkedin-brands-solid-full.svg", width=36)
+    with coluna2:    
+        st.write("[GitHub](https://github.com/Leandrns)")
+        st.write("[LinkedIn](https://linkedin.com/in/leandro-souza-326722181)")
     
     # --- Botão de Download do Currículo ---
     try:
@@ -79,8 +82,8 @@ with col2:
     # --- Experiência 1 ---
     with st.expander("🏢 Estágio em Qualidade (QA) | NeoAssist (2025 - Presente)"):
         st.write("""
-        - ► Elaboração de testes de Bots e Centrais de Atendimento.
-        - ► Participação em reuniões e rituais de SCRUM.
+        - Elaboração de testes de Bots e Centrais de Atendimento.
+        - Participação em reuniões e rituais de SCRUM.
         """)
     
     # --- Seção de Formação Acadêmica ---
@@ -90,18 +93,13 @@ with col2:
     # --- Formação 1 ---
     with st.expander("🎓 Ensino Médio Técnico em Mecatrônica | ETEC Presidente Vargas (2021 - 2023)"):
         st.write("""
-        - ► TCC sobre uso da robótica em terapia assistiva para crianças com paralisia cerebral.
-        - ► Participação em projetos de programação, mecânica e eletrônica.
+        - TCC sobre uso da robótica em terapia assistiva para crianças com paralisia cerebral.
+        - Participação em projetos de programação, mecânica e eletrônica.
         """)
         
     # --- Formação 2 ---
     with st.expander("🎓 Bacharelado em Engenharia de Software | FIAP (2024 - 2027)"):
         st.write("""
-        - ► Desenvolvimento de projetos de Front-End, Back-End, Análise de Dados, Inteligência Artificial e outros.
-        - ► Participação em Iniciação Científica sobre aplicação de Realidadde Aumentada para autoajuda.
+        - Desenvolvimento de projetos de Front-End, Back-End, Análise de Dados, Inteligência Artificial e outros.
+        - Participação em Iniciação Científica sobre aplicação de Realidadde Aumentada para autoajuda.
         """)
-
-    # --- Seção de Projetos ---
-    st.write("---")
-    st.subheader("Projetos em Destaque")
-    st.write("[🔗 Dashboard de Análise de Vendas](link-para-o-projeto) - Um dashboard interativo construído com Streamlit para analisar dados de vendas de e-commerce.")
